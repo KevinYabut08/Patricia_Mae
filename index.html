@@ -25,6 +25,7 @@
             align-items: center;
             padding: 10px;
             position: relative;
+            overflow-x: hidden;
         }
 
         .body-bg {
@@ -34,24 +35,284 @@
             z-index: -2;
         }
 
+        /* ===== DYNAMIC FLOATING HEARTS ===== */
         .floating-hearts {
             position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
             z-index: -1;
+            overflow: hidden;
         }
 
-        .heart {
+        .heart-bg {
             position: absolute;
-            color: rgba(255, 120, 160, 0.25);
+            color: rgba(255, 120, 160, 0.6);
             font-size: 24px;
-            animation: float 8s infinite linear;
+            animation: floatAround 8s infinite linear;
+            will-change: transform;
         }
 
-        @keyframes float {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0.6; }
-            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        @keyframes floatAround {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0.6;
+            }
+            25% {
+                transform: translateY(75vh) translateX(50px) rotate(90deg);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translateY(50vh) translateX(-50px) rotate(180deg);
+                opacity: 0.4;
+            }
+            75% {
+                transform: translateY(25vh) translateX(50px) rotate(270deg);
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* ===== WORDLE GAME OVERLAY ===== */
+        .wordle-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 220, 230, 0.98);
+            backdrop-filter: blur(15px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .wordle-box {
+            background: white;
+            max-width: 600px;
+            width: 100%;
+            padding: 20px 15px;
+            border-radius: 60px 15px 60px 15px;
+            border: 6px solid #ffb7c9;
+            box-shadow: 0 30px 40px #d95a7a;
+            text-align: center;
+            animation: boxAppear 0.5s ease;
+            margin: auto;
+        }
+
+        @keyframes boxAppear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .wordle-box h2 {
+            font-size: clamp(1.8rem, 6vw, 2.5rem);
+            color: #ff4d6d;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .wordle-box .hint {
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            color: #b34363;
+            margin-bottom: 15px;
+            background: #fff0f5;
+            padding: 12px;
+            border-radius: 50px;
+            border: 2px dashed #ff99bb;
+        }
+
+        .wordle-box .hint i {
+            color: #ff4d6d;
+            margin-right: 8px;
+        }
+
+        /* Wordle grid */
+        .wordle-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin: 15px 0;
+            align-items: center;
+        }
+
+        .wordle-row {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .wordle-cell {
+            width: min(55px, 12vw);
+            height: min(55px, 12vw);
+            border: 2px solid #ffb7c5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(1.5rem, 6vw, 2rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            background: white;
+            transition: all 0.3s ease;
+            color: #462e36;
+            animation: cellPop 0.2s ease;
+        }
+
+        @media (max-width: 380px) {
+            .wordle-cell {
+                width: 45px;
+                height: 45px;
+                font-size: 1.5rem;
+            }
+        }
+
+        @keyframes cellPop {
+            0% { transform: scale(0.8); }
+            80% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .wordle-cell.filled {
+            border-color: #ff4d6d;
+            background: #fff0f5;
+            transform: scale(1.02);
+        }
+
+        .wordle-cell.correct {
+            background: #6aaa64;
+            border-color: #6aaa64;
+            color: white;
+            animation: winFlip 0.5s ease;
+        }
+
+        .wordle-cell.present {
+            background: #c9b458;
+            border-color: #c9b458;
+            color: white;
+            animation: winFlip 0.5s ease;
+        }
+
+        .wordle-cell.absent {
+            background: #787c7e;
+            border-color: #787c7e;
+            color: white;
+            animation: winFlip 0.5s ease;
+        }
+
+        @keyframes winFlip {
+            0% { transform: rotateX(0) scale(1); }
+            50% { transform: rotateX(90deg) scale(1.1); }
+            100% { transform: rotateX(0) scale(1); }
+        }
+
+        /* Keyboard */
+        .wordle-keyboard {
+            margin: 15px 0 10px;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+            gap: 3px;
+        }
+
+        .key {
+            background: #ffd9e4;
+            border: 2px solid white;
+            color: #b34363;
+            font-size: clamp(0.9rem, 3vw, 1.3rem);
+            font-weight: 600;
+            padding: 10px 8px;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #b07288;
+            transition: all 0.1s ease;
+            min-width: 32px;
+            text-align: center;
+            user-select: none;
+            flex: 0 1 auto;
+        }
+
+        .key:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        .key.wide {
+            min-width: 55px;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            padding: 10px 12px;
+        }
+
+        .key.used-correct {
+            background: #6aaa64;
+            color: white;
+            border-color: #4a7a44;
+            animation: keyPop 0.3s ease;
+        }
+
+        .key.used-present {
+            background: #c9b458;
+            color: white;
+            border-color: #9a8440;
+            animation: keyPop 0.3s ease;
+        }
+
+        .key.used-absent {
+            background: #787c7e;
+            color: white;
+            border-color: #585c5e;
+            animation: keyPop 0.3s ease;
+        }
+
+        @keyframes keyPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .message-area {
+            min-height: 40px;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            color: #ff4d6d;
+            margin: 8px 0;
+            font-weight: 600;
+            animation: messagePulse 1s ease;
+        }
+
+        @keyframes messagePulse {
+            0% { opacity: 0; transform: translateY(-10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .reset-btn {
+            background: #ff8da1;
+            border: 3px solid white;
+            color: white;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            padding: 8px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #b35f77;
+            transition: all 0.1s ease;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .reset-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
         }
 
         /* main card */
@@ -65,6 +326,8 @@
             box-shadow: 0 30px 50px rgba(200, 90, 130, 0.35), 0 0 0 3px #fff2f5 inset;
             border: 2px solid #fff0f2;
             overflow: hidden;
+            display: none;
+            position: relative;
         }
 
         .valentine-header {
@@ -134,7 +397,6 @@
             box-shadow: none;
         }
 
-        /* pages container */
         .pages-container {
             position: relative;
         }
@@ -182,8 +444,8 @@
         }
 
         .disc {
-            width: min(220px, 50vw);
-            height: min(220px, 50vw);
+            width: min(200px, 45vw);
+            height: min(200px, 45vw);
             background: #2d1e24;
             border-radius: 50%;
             box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 0 8px #c0a0a8, 0 0 0 12px #f0cad5;
@@ -233,7 +495,7 @@
         }
 
         .tone-arm {
-            width: min(140px, 30vw);
+            width: min(120px, 25vw);
             height: 12px;
             background: linear-gradient(90deg, #88707b, #b2909c);
             border-radius: 40px;
@@ -247,7 +509,7 @@
             flex-direction: column;
             gap: 15px;
             width: 100%;
-            max-width: 300px;
+            max-width: 280px;
         }
 
         .btn-group {
@@ -272,7 +534,12 @@
             gap: 8px;
             flex: 1;
             justify-content: center;
-            min-width: 80px;
+            min-width: 70px;
+        }
+
+        .vinyl-btn:active {
+            transform: translateY(6px);
+            box-shadow: none;
         }
 
         .permanent-song {
@@ -352,6 +619,11 @@
             gap: 8px;
         }
 
+        .slideshow-btn:active {
+            transform: translateY(5px);
+            box-shadow: none;
+        }
+
         .slide-dots {
             display: flex;
             gap: 8px;
@@ -389,12 +661,29 @@
             overflow: hidden;
             border: 5px solid white;
             box-shadow: 0 15px 25px rgba(200, 80, 120, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .video-card:hover {
+            transform: scale(1.02);
         }
 
         .video-container {
             width: 100%;
-            aspect-ratio: 16 / 9;
             background: #2a1e22;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-container.landscape {
+            aspect-ratio: 16 / 9;
+        }
+
+        .video-container.portrait {
+            aspect-ratio: 9 / 16;
+            max-height: 500px;
+            margin: 0 auto;
         }
 
         .video-container video {
@@ -409,9 +698,16 @@
             color: #b34363;
             font-weight: 600;
             font-size: 1rem;
+            background: #fff5f7;
         }
 
-        /* ===== PAGE 4: LOVE LETTER & SURPRISE ===== */
+        .video-card.portrait-card {
+            max-width: 250px;
+            justify-self: center;
+            grid-column: span 1;
+        }
+
+        /* ===== PAGE 4: LOVE LETTER & EASTER EGG ===== */
         .love-letter {
             padding: 30px 20px;
             background: #fff7f9;
@@ -419,6 +715,13 @@
             border: 5px solid white;
             box-shadow: 0 20px 30px #ffb8cb;
             margin-bottom: 30px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .love-letter:hover {
+            transform: scale(1.02);
+            box-shadow: 0 25px 35px #ffa5b8;
         }
 
         .letter-text {
@@ -429,25 +732,94 @@
             font-weight: 400;
         }
 
-        .surprise-button {
-            background: #ffb0c3;
-            padding: 20px;
-            border-radius: 200px;
-            text-align: center;
+        .easter-egg-hint {
+            position: absolute;
+            bottom: 5px;
+            right: 15px;
+            color: #ffb0c3;
+            font-size: 0.8rem;
+            opacity: 0.2;
+            transition: opacity 0.3s ease;
             cursor: pointer;
-            border: 6px solid white;
-            box-shadow: 0 12px 0 #b07288;
-            transition: 0.1s;
         }
 
-        .surprise-button span {
-            font-size: clamp(1.5rem, 5vw, 2.2rem);
-            font-weight: 700;
-            color: white;
-            text-shadow: 3px 3px 0 #b34363;
+        .love-letter:hover .easter-egg-hint {
+            opacity: 0.8;
         }
 
-        /* ===== MOBILE RESPONSIVE SURPRISE MODAL ===== */
+        /* ===== EASTER EGG CELEBRATION ===== */
+        .easter-egg-celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .easter-particle {
+            position: absolute;
+            color: #ff4d6d;
+            font-size: 30px;
+            animation: easterFloat 4s ease-out forwards;
+            filter: drop-shadow(0 0 15px currentColor);
+        }
+
+        @keyframes easterFloat {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 1;
+            }
+            25% {
+                transform: translateY(75vh) translateX(50px) rotate(180deg);
+                opacity: 0.9;
+            }
+            50% {
+                transform: translateY(50vh) translateX(-50px) rotate(360deg);
+                opacity: 0.8;
+            }
+            75% {
+                transform: translateY(25vh) translateX(50px) rotate(540deg);
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-20vh) translateX(0) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .easter-sparkle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: sparkleFloat 3s ease-out forwards;
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        @keyframes sparkleFloat {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 1;
+            }
+            25% {
+                transform: translateY(-25vh) translateX(25px) scale(1.2);
+            }
+            50% {
+                transform: translateY(-50vh) translateX(-25px) scale(0.8);
+            }
+            75% {
+                transform: translateY(-75vh) translateX(25px) scale(1.5);
+            }
+            100% {
+                transform: translateY(-100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* ===== SURPRISE MODAL ===== */
         .modal {
             display: none;
             position: fixed;
@@ -459,7 +831,7 @@
             backdrop-filter: blur(10px);
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            z-index: 4000;
             padding: 15px;
             overflow-y: auto;
         }
@@ -478,6 +850,13 @@
             margin: auto;
             position: relative;
             -webkit-overflow-scrolling: touch;
+            animation: modalPop 0.5s ease;
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            80% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .modal-content h2 {
@@ -493,64 +872,50 @@
             margin: 15px 0;
             line-height: 1.6;
             text-align: left;
-            padding: 0 10px;
             max-height: 300px;
             overflow-y: auto;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            padding: 15px;
         }
 
-        /* ===== MOBILE RESPONSIVE BOUQUET ===== */
+        /* ===== BOUQUET ===== */
         .flower-bouquet {
             position: relative;
             width: 100%;
             height: auto;
-            min-height: 200px;
-            max-height: 300px;
+            min-height: 180px;
+            max-height: 250px;
             margin: 10px 0;
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            transform: scale(0.9);
+            transform: scale(0.85);
         }
 
         @media (max-width: 768px) {
-            .flower-bouquet {
-                transform: scale(0.8);
-                min-height: 180px;
-            }
+            .flower-bouquet { transform: scale(0.75); }
         }
-
         @media (max-width: 480px) {
-            .flower-bouquet {
-                transform: scale(0.7);
-                min-height: 160px;
-            }
-            
-            .bouquet-container {
-                gap: 3px;
-            }
-            
-            .modal-content {
-                padding: 20px 15px;
-            }
+            .flower-bouquet { transform: scale(0.65); }
         }
 
         .bouquet-container {
             position: relative;
             width: 100%;
             max-width: 350px;
-            height: 200px;
+            height: 180px;
             display: flex;
             justify-content: center;
             align-items: flex-end;
             gap: 5px;
-            z-index: 5;
             margin: 0 auto;
         }
 
         .flower {
             position: relative;
-            width: 40px;
-            height: 70px;
+            width: 35px;
+            height: 60px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -572,23 +937,22 @@
             75% { transform: rotate(-5deg); }
         }
 
-        /* rose */
         .flower.rose .petal {
             position: absolute;
-            width: 22px;
-            height: 30px;
+            width: 20px;
+            height: 28px;
             background: #ff4d6d;
             border-radius: 50% 50% 20% 20%;
             top: 0;
         }
-        .flower.rose .petal1 { transform: rotate(-20deg) translateX(-8px); background: #ff3355; }
-        .flower.rose .petal2 { transform: rotate(20deg) translateX(8px); background: #ff3355; }
+        .flower.rose .petal1 { transform: rotate(-20deg) translateX(-7px); background: #ff3355; }
+        .flower.rose .petal2 { transform: rotate(20deg) translateX(7px); background: #ff3355; }
         .flower.rose .petal3 { transform: rotate(0deg) translateY(5px); background: #ff6b8b; }
-        .flower.rose .petal4 { transform: rotate(180deg) translateY(10px); background: #ff8da1; opacity: 0.7; }
+        .flower.rose .petal4 { transform: rotate(180deg) translateY(8px); background: #ff8da1; opacity: 0.7; }
         .flower.rose .center {
             position: absolute;
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             background: #ffd700;
             border-radius: 50%;
             top: 8px;
@@ -596,25 +960,23 @@
             z-index: 2;
         }
 
-        /* tulip */
         .flower.tulip .petal {
             position: absolute;
-            width: 18px;
-            height: 40px;
+            width: 16px;
+            height: 35px;
             background: #ff99bb;
             border-radius: 50% 50% 40% 40%;
             top: 0;
         }
-        .flower.tulip .petal1 { transform: rotate(-15deg) translateX(-7px); }
-        .flower.tulip .petal2 { transform: rotate(15deg) translateX(7px); }
+        .flower.tulip .petal1 { transform: rotate(-15deg) translateX(-6px); }
+        .flower.tulip .petal2 { transform: rotate(15deg) translateX(6px); }
         .flower.tulip .petal3 { transform: rotate(0deg) translateY(5px); }
-        .flower.tulip .center.small { width: 10px; height: 10px; top: 12px; background: #ffaa55; }
+        .flower.tulip .center.small { width: 9px; height: 9px; top: 12px; background: #ffaa55; }
 
-        /* daisy */
         .flower.daisy .petal {
             position: absolute;
-            width: 14px;
-            height: 22px;
+            width: 12px;
+            height: 20px;
             background: white;
             border: 2px solid #ffb7c5;
             border-radius: 40% 40% 50% 50%;
@@ -625,33 +987,31 @@
         .flower.daisy .petal4 { transform: rotate(180deg) translateY(-5px); }
         .flower.daisy .petal5 { transform: rotate(240deg) translateY(-5px); }
         .flower.daisy .petal6 { transform: rotate(300deg) translateY(-5px); }
-        .flower.daisy .center.daisy { background: #ffaa33; width: 12px; height: 12px; top: 5px; }
+        .flower.daisy .center.daisy { background: #ffaa33; width: 10px; height: 10px; top: 5px; }
 
-        /* lily */
         .flower.lily .petal {
             position: absolute;
-            width: 12px;
-            height: 45px;
+            width: 10px;
+            height: 40px;
             background: #ffb3c6;
             border-radius: 40% 40% 50% 50%;
         }
         .flower.lily .petal1 { transform: rotate(-10deg) translateX(-4px) translateY(-5px); }
         .flower.lily .petal2 { transform: rotate(10deg) translateX(4px) translateY(-5px); }
         .flower.lily .petal3 { transform: rotate(0deg) translateY(0px); }
-        .flower.lily .center.lily { background: #ffaa88; width: 8px; height: 8px; top: 12px; }
+        .flower.lily .center.lily { background: #ffaa88; width: 7px; height: 7px; top: 12px; }
 
-        /* bud */
         .flower.bud .bud-flower {
-            width: 18px;
-            height: 22px;
+            width: 16px;
+            height: 20px;
             background: #ff99bb;
             border-radius: 50% 50% 40% 40%;
             position: absolute;
             top: 5px;
         }
         .flower.bud .bud-leaf {
-            width: 8px;
-            height: 14px;
+            width: 7px;
+            height: 12px;
             background: #90be6d;
             border-radius: 50%;
             position: absolute;
@@ -660,74 +1020,68 @@
             transform: rotate(-20deg);
         }
 
-        /* stems */
         .bouquet-stems {
             position: absolute;
             bottom: 0;
             width: 100%;
             max-width: 350px;
-            height: 150px;
-            z-index: 1;
+            height: 130px;
             left: 50%;
             transform: translateX(-50%);
         }
 
         .stem {
             position: absolute;
-            width: 4px;
-            height: 120px;
+            width: 3px;
+            height: 100px;
             background: #6b8e4c;
             bottom: 0;
             border-radius: 2px;
         }
 
-        .stem1 { left: 30px; height: 100px; }
-        .stem2 { left: 70px; height: 115px; }
-        .stem3 { left: 110px; height: 130px; }
-        .stem4 { left: 150px; height: 140px; }
-        .stem5 { left: 190px; height: 125px; }
-        .stem6 { left: 230px; height: 110px; }
-        .stem7 { left: 270px; height: 95px; }
+        .stem1 { left: 30px; height: 85px; }
+        .stem2 { left: 70px; height: 100px; }
+        .stem3 { left: 110px; height: 115px; }
+        .stem4 { left: 150px; height: 120px; }
+        .stem5 { left: 190px; height: 110px; }
+        .stem6 { left: 230px; height: 95px; }
+        .stem7 { left: 270px; height: 80px; }
 
-        /* leaves */
         .bouquet-leaves {
             position: absolute;
-            bottom: 40px;
+            bottom: 30px;
             width: 100%;
             max-width: 350px;
-            height: 80px;
-            z-index: 2;
+            height: 70px;
             left: 50%;
             transform: translateX(-50%);
         }
 
         .leaf {
             position: absolute;
-            width: 18px;
-            height: 10px;
+            width: 15px;
+            height: 8px;
             background: #7aa356;
             border-radius: 50%;
             transform: rotate(30deg);
         }
 
-        .leaf1 { left: 25px; bottom: 20px; transform: rotate(-20deg); }
-        .leaf2 { left: 140px; bottom: 45px; transform: rotate(40deg); }
-        .leaf3 { left: 200px; bottom: 30px; transform: rotate(-30deg); }
-        .leaf4 { left: 280px; bottom: 25px; transform: rotate(20deg); }
-        .leaf5 { left: 80px; bottom: 35px; transform: rotate(10deg); }
-        .leaf6 { left: 250px; bottom: 40px; transform: rotate(-15deg); }
+        .leaf1 { left: 25px; bottom: 15px; transform: rotate(-20deg); }
+        .leaf2 { left: 140px; bottom: 35px; transform: rotate(40deg); }
+        .leaf3 { left: 200px; bottom: 25px; transform: rotate(-30deg); }
+        .leaf4 { left: 280px; bottom: 20px; transform: rotate(20deg); }
+        .leaf5 { left: 80px; bottom: 25px; transform: rotate(10deg); }
+        .leaf6 { left: 250px; bottom: 30px; transform: rotate(-15deg); }
 
-        /* ribbon */
         .bouquet-ribbon {
             position: absolute;
-            bottom: 15px;
+            bottom: 10px;
             width: 100%;
             max-width: 350px;
-            height: 18px;
+            height: 15px;
             background: #ff4d6d;
             border-radius: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            z-index: 3;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             left: 50%;
             transform: translateX(-50%);
         }
@@ -735,11 +1089,11 @@
         .bouquet-ribbon::before, .bouquet-ribbon::after {
             content: '';
             position: absolute;
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
             background: #ff4d6d;
             border-radius: 50%;
-            top: -10px;
+            top: -8px;
         }
         .bouquet-ribbon::before { left: 20%; }
         .bouquet-ribbon::after { right: 20%; }
@@ -755,7 +1109,6 @@
             margin-top: 15px;
             box-shadow: 0 6px 0 #b35f77;
             transition: 0.07s;
-            width: 100%;
             max-width: 200px;
             margin: 15px auto 0;
         }
@@ -764,45 +1117,36 @@
             transform: translateY(6px);
             box-shadow: none;
         }
-
-        /* Mobile optimizations */
-        @media (max-width: 480px) {
-            .page-nav {
-                gap: 5px;
-                padding: 15px 10px;
-            }
-            
-            .nav-btn {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-            }
-            
-            .vinyl-container {
-                gap: 20px;
-                padding: 20px 15px;
-            }
-            
-            .controls {
-                max-width: 100%;
-            }
-            
-            .btn-group {
-                flex-wrap: wrap;
-            }
-            
-            .vinyl-btn {
-                flex: 1 1 auto;
-                min-width: 70px;
-                padding: 8px 12px;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="body-bg"></div>
+    <!-- DYNAMIC FLOATING HEARTS BACKGROUND -->
     <div class="floating-hearts" id="heartContainer"></div>
 
-    <div class="love-card">
+    <!-- WORDLE GAME OVERLAY -->
+    <div class="wordle-overlay" id="wordleOverlay">
+        <div class="wordle-box">
+            <h2>💗 Wordle Love 💗</h2>
+            <div class="hint">
+                <i class="fas fa-lightbulb"></i> Hint: First Kiss
+            </div>
+            
+            <!-- Wordle grid -->
+            <div class="wordle-grid" id="wordleGrid"></div>
+            
+            <!-- Message area -->
+            <div class="message-area" id="wordleMessage"></div>
+            
+            <!-- On-screen keyboard -->
+            <div class="wordle-keyboard" id="wordleKeyboard"></div>
+            
+            <!-- Reset button -->
+            <button class="reset-btn" id="resetWordleBtn">🔄 Reset Game</button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="love-card" id="mainContent">
         <!-- header -->
         <div class="valentine-header">
             <h1>💗 For My Patricia Mae 💗</h1>
@@ -813,7 +1157,7 @@
         <div class="page-nav">
             <button class="nav-btn active" data-page="page1"><i class="fas fa-compact-disc"></i> Jukebox</button>
             <button class="nav-btn" data-page="page2"><i class="fas fa-images"></i> Photobooth</button>
-            <button class="nav-btn" data-page="page3"><i class="fas fa-video"></i> Time Capsule</button>
+            <button class="nav-btn" data-page="page3"><i class="fas fa-video"></i> Memories</button>
             <button class="nav-btn" data-page="page4"><i class="fas fa-heart"></i> Secret </button>
         </div>
 
@@ -824,7 +1168,6 @@
                 <div class="section-title">
                     <i class="fas fa-compact-disc"></i> Our Jukebox
                 </div>
-                <!-- SIMPLE AUDIO PLAYER (YOUR MP3 FILE) -->
                 <div class="vinyl-container">
                     <div class="disc" id="vinylDisc">
                         <div class="disc-label"></div>
@@ -842,13 +1185,10 @@
                         <div class="music-status" id="musicStatus">💿 ready to play</div>
                     </div>
                 </div>
-
-                <!-- Hidden audio element (your MP3 file) -->
                 <audio id="loveAudio" preload="auto">
                     <source src="music/music-1.mp3" type="audio/mpeg">
-                    Your browser does not support audio.
                 </audio>
-                <p style="text-align:center; color:#ac4162; font-size:clamp(0.9rem, 3vw, 1.2rem);"> Kapag kasama kita babe, para akong nakikinig ng music and I don't want it to end. Isa kang himig sa aking puso. You are my favorite song baby, Happy Valentine.</p>
+                <p style="text-align:center; color:#ac4162;">Kapag kasama kita babe, para akong nakikinig ng music and I don't want it to end. You are a melody in my heart.</p>
             </div>
 
             <!-- PAGE 2: PHOTO SLIDESHOW -->
@@ -856,184 +1196,50 @@
                 <div class="section-title">
                     <i class="fas fa-images"></i> Photobooth
                 </div>
-                <div class="slideshow-container" id="slideshowContainer">
-                    <div class="slide active">
-                        <img src="/assets/img/img-1.jpg" alt="Memory 1">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-2.jpg" alt="Memory 2">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-3.jpg" alt="Memory 3">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-4.jpg" alt="Memory 4">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-5.jpg" alt="Memory 5">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-6.jpg" alt="Memory 6">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-7.jpg" alt="Memory 7">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-8.jpg" alt="Memory 8">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-9.jpg" alt="Memory 9">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-10.jpg" alt="Memory 10">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-11.jpg" alt="Memory 11">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-12.jpg" alt="Memory 12">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-13.jpg" alt="Memory 13">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-14.jpg" alt="Memory 14">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-15.jpg" alt="Memory 15">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-16.jpg" alt="Memory 16">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-17.jpg" alt="Memory 17">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-18.jpg" alt="Memory 18">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-19.jpg" alt="Memory 19">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-20.jpg" alt="Memory 20">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-21.jpg" alt="Memory 21">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-22.jpg" alt="Memory 22">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-23.jpg" alt="Memory 23">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-24.jpg" alt="Memory 24">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-25.jpg" alt="Memory 25">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-26.jpg" alt="Memory 26">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-27.jpg" alt="Memory 27">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-28.jpg" alt="Memory 28">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-29.jpg" alt="Memory 29">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-30.jpg" alt="Memory 30">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-31.jpg" alt="Memory 31">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-32.jpg" alt="Memory 32">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-33.jpg" alt="Memory 33">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-34.jpg" alt="Memory 34">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-35.jpg" alt="Memory 35">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-36.jpg" alt="Memory 36">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-37.jpg" alt="Memory 37">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-38.jpg" alt="Memory 38">
-                    </div>
-                    <div class="slide">
-                        <img src="/assets/img/img-39.jpg" alt="Memory 39">
-                    </div>
-                </div>
-
+                <div class="slideshow-container" id="slideshowContainer"></div>
                 <div class="slideshow-controls">
                     <button class="slideshow-btn" id="prevSlideBtn"><i class="fas fa-chevron-left"></i> prev</button>
                     <button class="slideshow-btn" id="autoSlideBtn"><i class="fas fa-play"></i> auto</button>
                     <button class="slideshow-btn" id="stopAutoBtn"><i class="fas fa-stop"></i> stop</button>
                     <button class="slideshow-btn" id="nextSlideBtn">next <i class="fas fa-chevron-right"></i></button>
                 </div>
-
-                <div class="slide-dots" id="slideDots">
-                    <span class="dot active" data-index="0"></span>
-                    <span class="dot" data-index="1"></span>
-                    <span class="dot" data-index="2"></span>
-                    <span class="dot" data-index="3"></span>
-                </div>
+                <div class="slide-dots" id="slideDots"></div>
             </div>
 
-            <!-- PAGE 3: VIDEO GALLERY (AUTO-PLAYING) -->
+            <!-- PAGE 3: VIDEO GALLERY -->
             <div class="page" id="page3">
                 <div class="section-title">
                     <i class="fas fa-video"></i> Memories
                 </div>
-                
                 <div class="video-grid" id="videoGrid">
                     <div class="video-card">
-                        <div class="video-container">
-                            <video loop muted autoplay playsinline>
-                                <source src="./assets/video/vid-2.mp4" type="video/mp4">
-                            </video>
+                        <div class="video-container landscape">
+                            <video loop muted autoplay playsinline><source src="./assets/video/vid-1.mp4" type="video/mp4"></video>
                         </div>
                         <div class="video-caption">beautiful</div>
                     </div>
                     <div class="video-card">
-                        <div class="video-container">
-                            <video loop muted autoplay playsinline>
-                                <source src="./assets/video/vid-1.mp4" type="video/mp4">
-                            </video>
+                        <div class="video-container landscape">
+                            <video loop muted autoplay playsinline><source src="./assets/video/vid-2.mp4" type="video/mp4"></video>
                         </div>
                         <div class="video-caption">moments</div>
                     </div>
                     <div class="video-card">
-                        <div class="video-container">
-                            <video loop muted autoplay playsinline>
-                                <source src="./assets/video/vid-3.mp4" type="video/mp4">
-                            </video>
+                        <div class="video-container landscape">
+                            <video loop muted autoplay playsinline><source src="./assets/video/vid-3.mp4" type="video/mp4"></video>
                         </div>
                         <div class="video-caption">together</div>
                     </div>
-                    <div class="video-card">
-                        <div class="video-container">
-                            <video loop muted autoplay playsinline>
-                                <source src="./assets/video/vid-4.mp4" type="video/mp4">
-                            </video>
+                    <div class="video-card portrait-card">
+                        <div class="video-container portrait">
+                            <video loop muted autoplay playsinline><source src="./assets/video/vid-4.mp4" type="video/mp4"></video>
                         </div>
                         <div class="video-caption">bouquet of me for youuuuuu</div>
                     </div>
                 </div>
             </div>
 
-            <!-- PAGE 4: LOVE LETTER & SURPRISE -->
+            <!-- PAGE 4: LOVE LETTER & EASTER EGG -->
             <div class="page" id="page4">
                 <div class="section-title">
                     <i class="fas fa-heart"></i> Secret
@@ -1046,18 +1252,17 @@
                     </div>
                 </div>
 
-                <div class="surprise-button" id="surpriseBtn">
-                    <span>???</span>       
+                <div style="text-align: center; color: #ffb0c3; font-size: 0.9rem; margin-top: 10px; opacity: 0.5;">
+                    <i class="fas fa-heart"></i> <i class="fas fa-heart"></i> <i class="fas fa-heart"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MOBILE RESPONSIVE SURPRISE MODAL -->
+    <!-- SURPRISE MODAL -->
     <div class="modal" id="surpriseModal">
         <div class="modal-content">
             <h2>💗 A Secret Message 💗</h2>
-            
             <div class="modal-message">
                 Secret lang to ha, Thank you so much sa pagmamahal na binibigay mo sakin. All the efforts and time bebe, I really appreciate you.
                 February 14 didn't have meaning to me before February 14, 2023. You know why? kasi wala ka pa nun. Ako'y lumbay, pighati at malungkot pag dating 
@@ -1068,85 +1273,25 @@
                 I love you til infinity. Vomero SOON!!! 💗
             </div>
      
-            <!-- BOUQUET OF FLOWERS (responsive) -->
+            <!-- BOUQUET OF FLOWERS -->
             <div class="flower-bouquet">
                 <div class="bouquet-container">
-                    <!-- rose -->
-                    <div class="flower rose flower1">
-                        <div class="petal petal1"></div>
-                        <div class="petal petal2"></div>
-                        <div class="petal petal3"></div>
-                        <div class="petal petal4"></div>
-                        <div class="center"></div>
-                    </div>
-                    <!-- tulip -->
-                    <div class="flower tulip flower2">
-                        <div class="petal petal1"></div>
-                        <div class="petal petal2"></div>
-                        <div class="petal petal3"></div>
-                        <div class="center small"></div>
-                    </div>
-                    <!-- daisy -->
-                    <div class="flower daisy flower3">
-                        <div class="petal petal1"></div>
-                        <div class="petal petal2"></div>
-                        <div class="petal petal3"></div>
-                        <div class="petal petal4"></div>
-                        <div class="petal petal5"></div>
-                        <div class="petal petal6"></div>
-                        <div class="center daisy"></div>
-                    </div>
-                    <!-- lily -->
-                    <div class="flower lily flower4">
-                        <div class="petal petal1"></div>
-                        <div class="petal petal2"></div>
-                        <div class="petal petal3"></div>
-                        <div class="center lily"></div>
-                    </div>
-                    <!-- rose again -->
-                    <div class="flower rose flower5">
-                        <div class="petal petal1"></div>
-                        <div class="petal petal2"></div>
-                        <div class="petal petal3"></div>
-                        <div class="petal petal4"></div>
-                        <div class="center"></div>
-                    </div>
-                    <!-- bud -->
-                    <div class="flower bud flower6">
-                        <div class="bud-flower"></div>
-                        <div class="bud-leaf"></div>
-                    </div>
-                    <!-- tulip -->
-                    <div class="flower tulip flower7">
-                        <div class="petal petal1"></div>
-                        <div class="petal petal2"></div>
-                        <div class="petal petal3"></div>
-                        <div class="center small"></div>
-                    </div>
+                    <div class="flower rose flower1"><div class="petal petal1"></div><div class="petal petal2"></div><div class="petal petal3"></div><div class="petal petal4"></div><div class="center"></div></div>
+                    <div class="flower tulip flower2"><div class="petal petal1"></div><div class="petal petal2"></div><div class="petal petal3"></div><div class="center small"></div></div>
+                    <div class="flower daisy flower3"><div class="petal petal1"></div><div class="petal petal2"></div><div class="petal petal3"></div><div class="petal petal4"></div><div class="petal petal5"></div><div class="petal petal6"></div><div class="center daisy"></div></div>
+                    <div class="flower lily flower4"><div class="petal long1"></div><div class="petal long2"></div><div class="petal long3"></div><div class="center lily"></div></div>
+                    <div class="flower rose flower5"><div class="petal petal1"></div><div class="petal petal2"></div><div class="petal petal3"></div><div class="petal petal4"></div><div class="center"></div></div>
+                    <div class="flower bud flower6"><div class="bud-flower"></div><div class="bud-leaf"></div></div>
+                    <div class="flower tulip flower7"><div class="petal petal1"></div><div class="petal petal2"></div><div class="petal petal3"></div><div class="center small"></div></div>
                 </div>
-                
-                <!-- stems -->
                 <div class="bouquet-stems">
-                    <div class="stem stem1"></div>
-                    <div class="stem stem2"></div>
-                    <div class="stem stem3"></div>
-                    <div class="stem stem4"></div>
-                    <div class="stem stem5"></div>
-                    <div class="stem stem6"></div>
-                    <div class="stem stem7"></div>
+                    <div class="stem stem1"></div><div class="stem stem2"></div><div class="stem stem3"></div><div class="stem stem4"></div>
+                    <div class="stem stem5"></div><div class="stem stem6"></div><div class="stem stem7"></div>
                 </div>
-                
-                <!-- leaves -->
                 <div class="bouquet-leaves">
-                    <div class="leaf leaf1"></div>
-                    <div class="leaf leaf2"></div>
-                    <div class="leaf leaf3"></div>
-                    <div class="leaf leaf4"></div>
-                    <div class="leaf leaf5"></div>
-                    <div class="leaf leaf6"></div>
+                    <div class="leaf leaf1"></div><div class="leaf leaf2"></div><div class="leaf leaf3"></div>
+                    <div class="leaf leaf4"></div><div class="leaf leaf5"></div><div class="leaf leaf6"></div>
                 </div>
-                
-                <!-- ribbon -->
                 <div class="bouquet-ribbon"></div>
             </div>     
 
@@ -1156,17 +1301,286 @@
 
     <script>
         (function() {
-            // floating hearts
-            const heartContainer = document.getElementById('heartContainer');
-            for (let i=0; i<25; i++) {
-                let heart = document.createElement('div');
-                heart.className = 'heart';
-                heart.innerHTML = '❤️';
-                heart.style.left = Math.random()*100 + '%';
-                heart.style.animationDelay = Math.random()*5 + 's';
-                heart.style.fontSize = (Math.random()*20 + 15) + 'px';
-                heartContainer.appendChild(heart);
+            // ========== DYNAMIC FLOATING HEARTS ==========
+            function createFloatingHearts() {
+                const heartContainer = document.getElementById('heartContainer');
+                if (!heartContainer) return;
+                
+                // Clear existing hearts
+                heartContainer.innerHTML = '';
+                
+                // Create 30 floating hearts with random positions and delays
+                for (let i = 0; i < 30; i++) {
+                    setTimeout(() => {
+                        const heart = document.createElement('div');
+                        heart.className = 'heart-bg';
+                        heart.innerHTML = ['❤️', '💗', '💖', '💕', '💓'][Math.floor(Math.random() * 5)];
+                        
+                        // Random starting position across the width
+                        heart.style.left = Math.random() * 100 + '%';
+                        
+                        // Random size
+                        const size = Math.random() * 20 + 15;
+                        heart.style.fontSize = size + 'px';
+                        
+                        // Random animation duration (6-12 seconds)
+                        const duration = Math.random() * 6 + 6;
+                        heart.style.animationDuration = duration + 's';
+                        
+                        // Random animation delay
+                        heart.style.animationDelay = Math.random() * 5 + 's';
+                        
+                        // Random opacity
+                        heart.style.opacity = Math.random() * 0.4 + 0.3;
+                        
+                        heartContainer.appendChild(heart);
+                        
+                        // Remove and recreate hearts periodically for infinite effect
+                        setTimeout(() => {
+                            if (heart.parentNode) {
+                                heart.remove();
+                                createSingleHeart();
+                            }
+                        }, duration * 1000);
+                    }, i * 200);
+                }
             }
+            
+            function createSingleHeart() {
+                const heartContainer = document.getElementById('heartContainer');
+                if (!heartContainer) return;
+                
+                const heart = document.createElement('div');
+                heart.className = 'heart-bg';
+                heart.innerHTML = ['❤️', '💗', '💖', '💕', '💓'][Math.floor(Math.random() * 5)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                heart.style.animationDuration = (Math.random() * 6 + 6) + 's';
+                heart.style.animationDelay = '0s';
+                heart.style.opacity = Math.random() * 0.4 + 0.3;
+                heartContainer.appendChild(heart);
+                
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.remove();
+                    }
+                }, 12000);
+            }
+            
+            // Start floating hearts
+            createFloatingHearts();
+            
+            // Continuously add new hearts
+            setInterval(() => {
+                if (document.getElementById('mainContent').style.display === 'block') {
+                    createSingleHeart();
+                }
+            }, 2000);
+
+            // ========== WORDLE GAME ==========
+            const targetWord = "ONION"; 
+            const maxAttempts = 6;
+            let currentAttempt = 0;
+            let currentGuess = [];
+            let gameWon = false;
+            
+            const wordleOverlay = document.getElementById('wordleOverlay');
+            const mainContent = document.getElementById('mainContent');
+            const wordleGrid = document.getElementById('wordleGrid');
+            const wordleKeyboard = document.getElementById('wordleKeyboard');
+            const wordleMessage = document.getElementById('wordleMessage');
+            
+            // Create empty grid
+            function createGrid() {
+                wordleGrid.innerHTML = '';
+                for (let i = 0; i < maxAttempts; i++) {
+                    const row = document.createElement('div');
+                    row.className = 'wordle-row';
+                    row.id = `row-${i}`;
+                    for (let j = 0; j < 5; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'wordle-cell';
+                        cell.id = `cell-${i}-${j}`;
+                        row.appendChild(cell);
+                    }
+                    wordleGrid.appendChild(row);
+                }
+            }
+            
+            // Create keyboard
+            function createKeyboard() {
+                const keys = [
+                    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+                    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+                    ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '⌫']
+                ];
+                
+                wordleKeyboard.innerHTML = '';
+                keys.forEach(row => {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'keyboard-row';
+                    row.forEach(key => {
+                        const keyDiv = document.createElement('div');
+                        keyDiv.className = key === 'ENTER' || key === '⌫' ? 'key wide' : 'key';
+                        keyDiv.textContent = key;
+                        keyDiv.addEventListener('click', () => handleKeyPress(key));
+                        rowDiv.appendChild(keyDiv);
+                    });
+                    wordleKeyboard.appendChild(rowDiv);
+                });
+            }
+            
+            // Handle keyboard input
+            function handleKeyPress(key) {
+                if (gameWon || currentAttempt >= maxAttempts) return;
+                
+                if (key === 'ENTER') {
+                    submitGuess();
+                } else if (key === '⌫') {
+                    if (currentGuess.length > 0) {
+                        currentGuess.pop();
+                        updateCurrentRow();
+                    }
+                } else if (currentGuess.length < 5) {
+                    currentGuess.push(key);
+                    updateCurrentRow();
+                }
+            }
+            
+            // Update current row with letters
+            function updateCurrentRow() {
+                for (let i = 0; i < 5; i++) {
+                    const cell = document.getElementById(`cell-${currentAttempt}-${i}`);
+                    if (cell) {
+                        cell.textContent = currentGuess[i] || '';
+                        if (currentGuess[i]) {
+                            cell.classList.add('filled');
+                        } else {
+                            cell.classList.remove('filled');
+                        }
+                    }
+                }
+            }
+            
+            // Submit guess and check
+            function submitGuess() {
+                if (currentGuess.length !== 5) {
+                    wordleMessage.textContent = '❌ Not enough letters!';
+                    wordleMessage.style.animation = 'messagePulse 0.5s ease';
+                    setTimeout(() => {
+                        wordleMessage.style.animation = '';
+                    }, 500);
+                    return;
+                }
+                
+                const guess = currentGuess.join('');
+                
+                // Check each letter
+                for (let i = 0; i < 5; i++) {
+                    const cell = document.getElementById(`cell-${currentAttempt}-${i}`);
+                    const letter = currentGuess[i];
+                    
+                    setTimeout(() => {
+                        if (letter === targetWord[i]) {
+                            cell.classList.add('correct');
+                            updateKeyColor(letter, 'correct');
+                        } else if (targetWord.includes(letter)) {
+                            cell.classList.add('present');
+                            updateKeyColor(letter, 'present');
+                        } else {
+                            cell.classList.add('absent');
+                            updateKeyColor(letter, 'absent');
+                        }
+                    }, i * 100);
+                }
+                
+                // Check win condition
+                if (guess === targetWord) {
+                    gameWon = true;
+                    wordleMessage.textContent = '🎉 Congratulations! You found the word! 🎉';
+                    
+                    // Celebration animation
+                    for (let i = 0; i < 20; i++) {
+                        setTimeout(() => {
+                            const heart = document.createElement('div');
+                            heart.className = 'easter-particle';
+                            heart.innerHTML = '❤️';
+                            heart.style.left = Math.random() * 100 + '%';
+                            heart.style.top = Math.random() * 100 + '%';
+                            heart.style.animation = 'easterFloat 2s ease-out forwards';
+                            document.body.appendChild(heart);
+                            setTimeout(() => heart.remove(), 2000);
+                        }, i * 100);
+                    }
+                    
+                    setTimeout(() => {
+                        wordleOverlay.style.display = 'none';
+                        mainContent.style.display = 'block';
+                    }, 2000);
+                } else {
+                    currentAttempt++;
+                    currentGuess = [];
+                    
+                    if (currentAttempt >= maxAttempts) {
+                        wordleMessage.textContent = `💔 Game over! The word was ${targetWord}. Try again!`;
+                        wordleMessage.style.color = '#ff4d6d';
+                    }
+                }
+            }
+            
+            // Update keyboard key colors
+            function updateKeyColor(letter, status) {
+                const keys = document.querySelectorAll('.key');
+                keys.forEach(key => {
+                    if (key.textContent === letter) {
+                        if (status === 'correct') {
+                            key.classList.add('used-correct');
+                        } else if (status === 'present' && !key.classList.contains('used-correct')) {
+                            key.classList.add('used-present');
+                        } else if (!key.classList.contains('used-correct') && !key.classList.contains('used-present')) {
+                            key.classList.add('used-absent');
+                        }
+                    }
+                });
+            }
+            
+            // Reset game
+            function resetGame() {
+                currentAttempt = 0;
+                currentGuess = [];
+                gameWon = false;
+                wordleMessage.textContent = '';
+                createGrid();
+                
+                // Reset keyboard colors
+                const keys = document.querySelectorAll('.key');
+                keys.forEach(key => {
+                    key.classList.remove('used-correct', 'used-present', 'used-absent');
+                });
+            }
+            
+            // Initialize Wordle
+            createGrid();
+            createKeyboard();
+            
+            document.getElementById('resetWordleBtn').addEventListener('click', resetGame);
+            
+            // Physical keyboard support
+            document.addEventListener('keydown', (e) => {
+                if (wordleOverlay.style.display !== 'none') {
+                    const key = e.key.toUpperCase();
+                    if (key === 'ENTER') {
+                        e.preventDefault();
+                        handleKeyPress('ENTER');
+                    } else if (key === 'BACKSPACE' || key === 'DELETE') {
+                        e.preventDefault();
+                        handleKeyPress('⌫');
+                    } else if (key.length === 1 && key >= 'A' && key <= 'Z') {
+                        e.preventDefault();
+                        handleKeyPress(key);
+                    }
+                }
+            });
 
             // ========== PAGE NAVIGATION ==========
             const navBtns = document.querySelectorAll('.nav-btn');
@@ -1175,44 +1589,33 @@
             navBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const targetPage = btn.dataset.page;
-                    
                     navBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    
                     pages.forEach(page => {
                         page.classList.remove('active');
-                        if (page.id === targetPage) {
-                            page.classList.add('active');
-                        }
+                        if (page.id === targetPage) page.classList.add('active');
                     });
                 });
             });
 
-            // ========== SIMPLE MP3 PLAYER (YOUR MUSIC) ==========
+            // ========== VINYL PLAYER ==========
             const vinylDisc = document.getElementById('vinylDisc');
             const playBtn = document.getElementById('playVinylBtn');
             const pauseBtn = document.getElementById('pauseVinylBtn');
             const stopBtn = document.getElementById('stopVinylBtn');
             const musicStatus = document.getElementById('musicStatus');
-
-            // Get the audio element
             const audio = document.getElementById('loveAudio');
 
-            // Play button
             playBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                audio.play()
-                    .then(() => {
-                        vinylDisc.classList.add('playing');
-                        musicStatus.innerText = '🎵 playing our song';
-                    })
-                    .catch(error => {
-                        console.error('Playback failed:', error);
-                        musicStatus.innerText = '❌ tap again to play';
-                    });
+                audio.play().then(() => {
+                    vinylDisc.classList.add('playing');
+                    musicStatus.innerText = '🎵 playing our song';
+                }).catch(() => {
+                    musicStatus.innerText = '❌ tap again to play';
+                });
             });
 
-            // Pause button
             pauseBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 audio.pause();
@@ -1220,16 +1623,14 @@
                 musicStatus.innerText = '⏸️ paused';
             });
 
-            // Stop button
             stopBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 audio.pause();
-                audio.currentTime = 0; // Reset to beginning
+                audio.currentTime = 0;
                 vinylDisc.classList.remove('playing');
                 musicStatus.innerText = '💿 stopped';
             });
 
-            // When song ends
             audio.addEventListener('ended', () => {
                 vinylDisc.classList.remove('playing');
                 musicStatus.innerText = '💿 finished';
@@ -1237,14 +1638,36 @@
             });
 
             // ========== PHOTO SLIDESHOW ==========
+            // Populate slides
+            const slideshowContainer = document.getElementById('slideshowContainer');
+            for (let i = 1; i <= 38; i++) {
+                const slide = document.createElement('div');
+                slide.className = i === 1 ? 'slide active' : 'slide';
+                const img = document.createElement('img');
+                img.src = `/assets/img/img-${i}.jpg`;
+                img.alt = `Memory ${i}`;
+                img.onerror = () => { /* Ignore missing images */ };
+                slide.appendChild(img);
+                slideshowContainer.appendChild(slide);
+            }
+            
             const slides = document.querySelectorAll('#page2 .slide');
+            const dotsContainer = document.getElementById('slideDots');
+            
+            // Create dots
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < slides.length; i++) {
+                const dot = document.createElement('span');
+                dot.className = i === 0 ? 'dot active' : 'dot';
+                dot.dataset.index = i;
+                dotsContainer.appendChild(dot);
+            }
+            
             const dots = document.querySelectorAll('#page2 .dot');
             const prevBtn = document.getElementById('prevSlideBtn');
             const nextBtn = document.getElementById('nextSlideBtn');
             const autoBtn = document.getElementById('autoSlideBtn');
             const stopAutoBtn = document.getElementById('stopAutoBtn');
-            const slideshowContainer = document.getElementById('slideshowContainer');
-            const dotsContainer = document.getElementById('slideDots');
             let currentSlide = 0;
             let autoInterval = null;
 
@@ -1275,42 +1698,84 @@
                 });
             }
 
-            // ========== SURPRISE MODAL (MOBILE FRIENDLY) ==========
+            // ========== EASTER EGG ==========
             const modal = document.getElementById('surpriseModal');
-            const surpriseBtn = document.getElementById('surpriseBtn');
             const closeModal = document.getElementById('closeModal');
             
-            if (surpriseBtn) {
-                surpriseBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
+            const easterEggTrigger = document.querySelector('#page4 .section-title');
+            const heartIcons = document.querySelector('#page4 .fa-heart')?.parentElement;
+
+            function createEasterEggCelebration() {
+                const celebration = document.createElement('div');
+                celebration.className = 'easter-egg-celebration';
+                document.body.appendChild(celebration);
+                
+                for (let i = 0; i < 30; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'easter-particle';
+                        particle.innerHTML = ['❤️', '💗', '💖', '💕', '💓', '🥚', '✨'][Math.floor(Math.random() * 7)];
+                        particle.style.left = Math.random() * 100 + '%';
+                        particle.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                        particle.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                        celebration.appendChild(particle);
+                        
+                        setTimeout(() => particle.remove(), 4000);
+                    }, i * 100);
+                }
+                
+                for (let i = 0; i < 40; i++) {
+                    setTimeout(() => {
+                        const sparkle = document.createElement('div');
+                        sparkle.className = 'easter-sparkle';
+                        sparkle.style.left = Math.random() * 100 + '%';
+                        sparkle.style.background = ['#ff4d6d', '#ffd700', '#ff69b4'][Math.floor(Math.random() * 3)];
+                        sparkle.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                        celebration.appendChild(sparkle);
+                        
+                        setTimeout(() => sparkle.remove(), 3000);
+                    }, i * 80);
+                }
+                
+                setTimeout(() => celebration.remove(), 5000);
+            }
+
+            function openSurprise() {
+                createEasterEggCelebration();
+                setTimeout(() => {
                     modal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                    document.body.style.overflow = 'hidden';
+                }, 800);
+            }
+
+            if (easterEggTrigger) {
+                easterEggTrigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openSurprise();
                 });
             }
-            
+
+            if (heartIcons) {
+                heartIcons.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openSurprise();
+                });
+            }
+
             if (closeModal) {
                 closeModal.addEventListener('click', (e) => {
                     e.preventDefault();
                     modal.style.display = 'none';
-                    document.body.style.overflow = ''; // Restore scrolling
+                    document.body.style.overflow = '';
                 });
             }
             
             window.addEventListener('click', (e) => {
                 if (e.target === modal) {
                     modal.style.display = 'none';
-                    document.body.style.overflow = ''; // Restore scrolling
+                    document.body.style.overflow = '';
                 }
             });
-
-            // Handle touch events for mobile
-            if (surpriseBtn) {
-                surpriseBtn.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    modal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
-                }, { passive: false });
-            }
         })();
     </script>
 </body>
