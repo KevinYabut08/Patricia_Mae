@@ -1465,7 +1465,7 @@
             // Submit guess and check
             function submitGuess() {
                 if (currentGuess.length !== 5) {
-                    wordleMessage.textContent = '❌ Not enough letters!';
+                    wordleMessage.textContent = 'OH WAG KA MAINIS, KAYA MO YAN <3';
                     wordleMessage.style.animation = 'messagePulse 0.5s ease';
                     setTimeout(() => {
                         wordleMessage.style.animation = '';
@@ -1497,7 +1497,7 @@
                 // Check win condition
                 if (guess === targetWord) {
                     gameWon = true;
-                    wordleMessage.textContent = '🎉 Congratulations! You found the word! 🎉';
+                    wordleMessage.textContent = '🎉 GALING NAMAN NIYAN AH!!AHAHAHAHAH 🎉';
                     
                     // Celebration animation
                     for (let i = 0; i < 20; i++) {
@@ -1522,7 +1522,7 @@
                     currentGuess = [];
                     
                     if (currentAttempt >= maxAttempts) {
-                        wordleMessage.textContent = `💔 Game over! The word was ${targetWord}. Try again!`;
+                        wordleMessage.textContent = `💔 Game over! The word was HULAAN MO :). Try again!`;
                         wordleMessage.style.color = '#ff4d6d';
                     }
                 }
